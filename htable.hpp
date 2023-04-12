@@ -6,11 +6,18 @@ int hashValue(const T& value) {
 }
 
 template <class T, class S>
-void HTable<T,S>::rehash() {}
+void HTable<T,S>::rehash() {
+	capacity *= 2;
+	std::vector<std::list<std::pair<T, S>>> vec{capacity};
+	for (int i = 0; i < keys.size(); ++i) {
+		vec = data[i];
+	}
+	data = vec;
+}
 
 template <class T, class S> 
-int HTable<T, S>::setIndex(const T& key) {
-	return abs(hashValue(key)) % 100;
+int HTable<T, S>::setIndex(const T& key,int capacity) {
+	return abs(hashValue(key)) % capacity;
 }
 
 template <class T, class S>
@@ -43,7 +50,7 @@ HTable<T, S> HTable<T, S>::operator=(HTable&& temp_ht) {
 
 template <class T, class S>
 S& HTable<T, S>::operator[](const T& key) {
-	int index = setIndex(key);
+	int index = setIndex(key,capacity);
 	if (std::find(keys.begin(), keys.end(), key) == keys.end()) {
 		keys.push_back(key);
 		S value{};
@@ -77,7 +84,7 @@ typename HTable<T, S>::iterator HTable<T, S>::find(const T& key) {
 	if (it.key_vector_it == keys.end()) {
 		return end();
 	}
-	int index = setIndex(*it.key_vector_it);
+	int index = setIndex(*it.key_vector_it, capacity);
 	it.data_vector_it = data.begin() + index;
 	it.list_it = data[index].begin();
 	while ((*it.list_it).first != key) {
@@ -89,7 +96,7 @@ typename HTable<T, S>::iterator HTable<T, S>::find(const T& key) {
 
 template <class T, class S>
 void HTable<T, S>::insert(const T& key, const S& value) {
-	int index = setIndex(key);
+	int index = setIndex(key, capacity);
 	if (std::find(keys.begin(), keys.end(), key) == keys.end()) {
 		keys.push_back(key);
 		if (data[index].empty()) {
@@ -136,7 +143,7 @@ typename HTable<T, S>::iterator HTable<T, S>::begin() {
 template <class T, class S>
 typename HTable<T, S>::iterator HTable<T, S>::end() {
 	iterator beg{};
-	int index = setIndex(keys[keys.size() - 1]);
+	int index = setIndex(keys[keys.size() - 1],capacity);
 	beg.key_vector_it = keys.end();
 	beg.data_vector_it = data.end() - 1;
 	beg.list_it = data[index].end();
@@ -228,3 +235,4 @@ HTable<T, S>::iterator::iterator(const iterator& other) {
 	list_it = other.list_it;
 	iter = other.iter;
 }
+
