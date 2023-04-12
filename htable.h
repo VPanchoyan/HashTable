@@ -49,7 +49,7 @@ private:
 	std::vector<std::list<std::pair<T, S>>> data{ 100 };
     std::vector<T> keys;
 	int capacity = 100;
-    static int setIndex(const T& key);
+     int setIndex(const T& key);
 	void rehash();
 	friend class iterator;
 };
