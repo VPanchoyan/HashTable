@@ -8,11 +8,14 @@ int hashValue(const T& value) {
 template <class T, class S>
 void HTable<T,S>::rehash() {
 	capacity *= 2;
-	std::vector<std::list<std::pair<T, S>>> vec{capacity};
-	for (int i = 0; i < keys.size(); ++i) {
-		vec = data[i];
+	std::vector<std::list<std::pair<T, S>>> newData{capacity};
+	std::vector<std::list<std::pair<T, S>>> temp = data;
+	data = newData;
+	for (int i = 0; i < temp.size(); ++i) {
+		for (auto it : temp[i]) {
+			insert(it->first,it->second);
+		}
 	}
-	data = vec;
 }
 
 template <class T, class S> 
